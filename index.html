@@ -2,19 +2,21 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/styles.css" type="text/css">
-        <meta name="viewport" content="initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8">
     </head>
     <body>
+        <div class="nav">
+            <label data-bind="click: toggleMenu">&#9776;</label>
+        </div>
         <div id ="container">
             <div id="side-panel">
                 <form>
-                    <input id="input-field" type="text" data-bind="textInput: query, event: {keyup: filter}">
-                    <input type="submit">
+                    <input id="input-field" type="text" data-bind="textInput: query, event: {keyup: filter}" placeholder="Search">
                 </form>
                 <ul id = "places-list" data-bind="foreach: placesList">
                     <div data-bind="if: visible">
-                    <li id="list-item" data-bind="text: name, click: $parent.listDetails"></li>
+                    <li id="list-item" data-bind="text: name, click: $parent.listDetails" onmouseover="" style="cursor: pointer;"></li>
                     </div>
                 </ul>
             </div>

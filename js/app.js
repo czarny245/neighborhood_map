@@ -190,8 +190,12 @@ var ViewModel = function() {
                     placeItem.marker = marker;
                 },
                 // This function will warn the user 
-                error: function (e) {
-                    infoWindow.setContent('<h5>The Forsquare request failed.<br> This might be due to exceeding request limits. <br>Pleace try again later.</h5>');
+                error: function () {
+                    marker.addListener('click', function(){
+                        infoWindow.open(map, marker);
+                        infoWindow.setContent('<h5>The Forsquare request failed.<br> This might be due to exceeding request limits. <br>Pleace try again later.</h5>');
+                    })
+                    
                 } 
                
             });
@@ -233,6 +237,10 @@ var ViewModel = function() {
         })
         placeItem.marker.setAnimation(google.maps.Animation.BOUNCE);
           
+    }
+    // This is hamburger menu functionality. Toggle side panel visibility.
+    self.toggleMenu = function() {
+        $('#side-panel').toggle();
     }
       
 
