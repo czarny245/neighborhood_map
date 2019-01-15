@@ -189,7 +189,7 @@ var ViewModel = function() {
                     placeItem.info = infoStr;
                     placeItem.marker = marker;
                 },
-                // This function will warn the user 
+                // This function will inform the user that something went wrong with forsquare(inside an infoWindow)
                 error: function () {
                     marker.addListener('click', function(){
                         infoWindow.open(map, marker);
