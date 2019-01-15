@@ -1,8 +1,11 @@
+// Initialize map global variable
 var map;
 
+// variables containing forsquare api details
 var CLIENT_ID = "WYJ23K5PKH2RCV1UCESCNSPPO3UAQJHSWHORAP2AAYTEQAJA";
 var CLIENT_SECRET = "YNMGAPQW4ZADXENOYO5T2XLZDFKJYLTHTUOEU102BO13ZDLJ";
 
+// Data containing location examples
 var places = [
     {
     name: "PadelClub London",
@@ -39,9 +42,34 @@ var places = [
     lat: 51.5026180102039,
     lng: -0.042106579792284514,
     id: "508e7970e4b040090bbe8cc8"
+    },
+    {
+    name: "St John's Park Tennis Courts",
+    lat: 51.497345,
+    lng: -0.010855,
+    id: "5741af3e498e439899200a23"
+    },
+    {
+    name: "Bethnal Green Gardens Tennis Courts",
+    lat: 51.52523975195817,
+    lng: -0.05452246712701292,
+    id: "4eb1e95b775b97929411e9f5"
+    },
+    {
+    name: "Haggerston Park Tennis Courts",
+    lat: 51.532318018743894,
+    lng: -0.06771779898433523,
+    id: "522c3d1611d2c4632297c3f5"
+    },
+    {
+    name: "Hermit Road Park",
+    lat: 51.524804417223756,
+    lng: 0.013750280992246736,
+    id: "5188b896498e8cc9b8efe9ba"
     }
 ];
-/////////////////////////////////////////////////////////////////////////
+
+// Initialize the map and the ViewModel
 function initMap() {
     mapElement = $("#map")
     map = new google.maps.Map(mapElement[0], {
@@ -50,7 +78,12 @@ function initMap() {
     });
     ko.applyBindings(new ViewModel());
 }
-/////////////////////////////////////////////////////////////////////////
+
+// Error handling for google maps api
+function mapError() {
+    $('#map').html('There was an error while loading Google Maps. Please try again.');
+}
+// Place object constructor
 var Place = function(data) {
     this.name = ko.observable(data.name);
     this.lat = ko.observable(data.lat);
@@ -62,35 +95,17 @@ var Place = function(data) {
     this.contact = ko.observable('');
     this.image = ko.observable('');
     this.url = ko.observable('');
-
-
-    // In the above example, the marker is placed on the map at construction
-    // of the marker using the map property in the marker options. 
-    // Alternatively, you can add the marker to the map directly by 
-    // using the marker's setMap() method.
-//   var marker = new google.maps.Marker({
-//        map: map,
-//        title: this.name(),
-//        position: new google.maps.LatLng(this.lat(), this.lng()),
-//        animation: google.maps.Animation.DROP
-//    });
-//    this.marker = marker;
-//
-//    // Initialize the infowindow
-//    var infoWindow = new google.maps.InfoWindow({
-//        maxWidth: 200,
-//    });
-//    this.infoWindow = infoWindow;
 }
-/////////////////////////////////////////////////////////////////////////
+// ***************************************************
+// ViewModel
+// ***************************************************
 var ViewModel = function() {
     var self = this;
 
+    // Initialize the array that will hold all our Place objects
     this.placesList = ko.observableArray([]);
 
-    //initialSearch();
-    //showMarkers();
-
+    // Push all our Place object into the array
     places.forEach(function(placeItem){
         self.placesList.push(new Place(placeItem));
     });
@@ -99,8 +114,10 @@ var ViewModel = function() {
     var infoWindow = new google.maps.InfoWindow({
     });
     
-
+    // This function will fill the Place objects with data from forsquare
+    // and create markers and infowindows
     self.placesList().forEach(function(placeItem) {
+            // Initialize a marker for every Place object
             var marker = new google.maps.Marker({
                 map: map,
                 title: placeItem.name(),
@@ -109,61 +126,90 @@ var ViewModel = function() {
                 animation: google.maps.Animation.DROP
             });
 
-            // ajax call
-
-            // working
-            //fetch('https://api.foursquare.com/v2/venues/'+placeItem.id()+'?client_id='+CLIENT_ID+'&client_secret='+CLIENT_SECRET+'&v=20180323');
+            // ajax call to Forsquare API
             var url = 'https://api.foursquare.com/v2/venues/'+placeItem.id()+'?client_id='+CLIENT_ID+'&client_secret='+CLIENT_SECRET+'&v=20180323'
             $.ajax({
                 url: url,
                 dataType: "json",
                 success: function(data) {
                     console.log(data);
-                    console.log(data.response.venue.location.address);
-                    console.log(data.response.venue.location.postalCode);
-                    console.log(data.response.venue.bestPhoto.prefix);
-                    console.log(data.response.venue.bestPhoto.suffix);
-                    console.log(data.response.venue.contact.phone);
-                    console.log(data.response.venue.canonicalUrl);
+                    var address, postalCode, prefix, suffix, contact, url
 
-                    // TODO: incorporate information retrieved from foresquare into the objects
+                    // Not every venue is fully documented in Forsquare.
+                    // Check with "if" statements for every piece of data to prevent errors
+                    if (data.response.venue.location.address) {
+                        address = data.response.venue.location.address;
+                    };
+                    if (data.response.venue.location.postalCode) {
+                        postalCode = data.response.venue.location.postalCode;
+                    };
+                    if (data.response.venue.bestPhoto) {
+                        prefix = data.response.venue.bestPhoto.prefix;
+                        suffix = data.response.venue.bestPhoto.suffix;
+                    };
+                    if (data.response.venue.contact.phone) {
+                        contact = data.response.venue.contact.phone;
+                    };
+                    if (data.response.venue.canonicalUrl) {
+                        url = data.response.venue.canonicalUrl;
+                    };
 
-                    placeItem.address(data.response.venue.location.address);
-                    console.log(placeItem.address()+"success");
-                    placeItem.postalCode(data.response.venue.location.postalCode);
-                    console.log(placeItem.postalCode()+'success');
-                    placeItem.image(data.response.venue.bestPhoto.prefix + "300x300" + data.response.venue.bestPhoto.suffix);
-                    console.log(placeItem.image()+ 'success');
-                    placeItem.contact(data.response.venue.contact.phone);
-                    console.log(placeItem.contact() + 'success');
-                    placeItem.url(data.response.venue.canonicalUrl);
-                    console.log(placeItem.url()+'success');
-                }
+                    // Fill Place object with Forsquare data
+                    placeItem.address(address);
+                    placeItem.postalCode(postalCode);
+                    placeItem.image(prefix + "300x300" + suffix);
+                    placeItem.contact(contact);
+                    placeItem.url(url);
+                
+                    // Fill infowindows with data. Check if observables are not empty.
+                    var infoStr = '<h3>'+placeItem.name()+'</h3>';
+                    if (placeItem.address()) {
+                        infoStr +=  '<p>'+placeItem.address()+'</p>'
+                    }
+                    if (placeItem.postalCode()) {
+                        infoStr += '<p>'+placeItem.postalCode()+'</p>'
+                    }
+                    if (placeItem.contact()) {
+                        infoStr += '<p>'+placeItem.contact()+'</p>'
+                    }
+                    if (placeItem.image()) {
+                        infoStr += '<img src="'+placeItem.image()+'" alt="No image in forsquare database">'
+                    }
+                    if (placeItem.url()) {
+                        infoStr += '<br><a href="'+placeItem.url()+'">Forsquare page</a>'
+                    }
+                    
+                    // Add an "click" eventlistener to markers.
+                    marker.addListener("click", function() {
+                        self.toggleBounce(placeItem);
+                        infoWindow.open(map, marker);
+                        infoWindow.setContent(infoStr);
+                    });
+
+                    placeItem.info = infoStr;
+                    placeItem.marker = marker;
+                },
+                // This function will warn the user 
+                error: function (e) {
+                    infoWindow.setContent('<h5>The Forsquare request failed.<br> This might be due to exceeding request limits. <br>Pleace try again later.</h5>');
+                } 
+               
             });
             // end of ajax call
+    
+    // This function will toggle bouncing and infowindows when you click on an
+    // item from the list
+    self.listDetails = function(placeItem) {
+        self.toggleBounce(placeItem);
+        infoWindow.open(map, placeItem.marker);
+        infoWindow.setContent(placeItem.info);
+    }
 
-            var infoStr = '<h3>'+placeItem.name()+'</h3>'+
-                '<p>'+placeItem.address()+'</p>'+
-                '<p>'+placeItem.postalCode()+'</p>'+
-                '<p>'+placeItem.contact()+'</p>'
-                '<img src="'+placeItem.image()+'" alt="image">'
-                '<a href="'+placeItem.url()+'"></a>'
-
-            marker.addListener("click", function() {
-
-
-
-                infoWindow.open(map, marker);
-                infoWindow.setContent(infoStr);
-            });
-
-
-            placeItem.marker = marker;
-
-            
     });
+    // Variable that holds the current query from the search bar
     self.query = ko.observable('');
 
+    // This funcion will filter the list of places and their markers on the map
     self.filter = function() {
         console.log("function active "+ self.query());
         self.placesList().forEach(function (placeItem) {
@@ -171,14 +217,23 @@ var ViewModel = function() {
             placeItem.marker.setMap(null);
         });
         for (i = 0; i < self.placesList().length; i++) {
-            //placesItem = self.placesList[i]
             var input = self.query().toLowerCase();
-            //console.log("sorting in progres...")
             if (self.placesList()[i].name().toLowerCase().indexOf(input) !== -1) {
-                //console.log(i+self.placesList()[i].name())
                 self.placesList()[i].visible(true);
                 self.placesList()[i].marker.setMap(map);
             }
         }
     }
+    // This function will make the selected marker bounce
+    self.toggleBounce = function(placeItem) {
+        self.placesList().forEach(function (placeItem) {
+            if (placeItem.marker.getAnimation() !== null) {
+                placeItem.marker.setAnimation(null);
+            }
+        })
+        placeItem.marker.setAnimation(google.maps.Animation.BOUNCE);
+          
+    }
+      
+
 }
