@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Neigborhood_map</title>
         <link rel="stylesheet" href="css/styles.css" type="text/css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8">
@@ -15,9 +16,9 @@
                     <input id="input-field" type="text" data-bind="textInput: query, event: {keyup: filter}" placeholder="Search">
                 </form>
                 <ul id = "places-list" data-bind="foreach: placesList">
-                    <div data-bind="if: visible">
-                    <li id="list-item" data-bind="text: name, click: $parent.listDetails" onmouseover="" style="cursor: pointer;"></li>
-                    </div>
+                    <li data-bind="if: visible">
+                    <div id="list-item" data-bind="text: name, click: $parent.listDetails" onmouseover="" style="cursor: pointer;"></dvi>
+                    </li>
                 </ul>
             </div>
             <div id="map"></div>
