@@ -21,16 +21,16 @@ function mapError() {
 }
 // Place object constructor
 var Place = function(data) {
-    this.name = ko.observable(data.name);
-    this.lat = ko.observable(data.lat);
-    this.lng = ko.observable(data.lng);
-    this.id = ko.observable(data.id);
+    this.name = data.name;
+    this.lat = data.lat;
+    this.lng = data.lng;
+    this.id = data.id;
     this.visible = ko.observable(true);
-    this.address = ko.observable('');
-    this.postalCode = ko.observable('');
-    this.contact = ko.observable('');
-    this.image = ko.observable('');
-    this.url = ko.observable('');
+    this.address = '';
+    this.postalCode = '';
+    this.contact = '';
+    this.image = '';
+    this.url = '';
 }
 // ***************************************************
 // ViewModel
@@ -56,14 +56,14 @@ var ViewModel = function() {
             // Initialize a marker for every Place object
             var marker = new google.maps.Marker({
                 map: map,
-                title: placeItem.name(),
-                position: new google.maps.LatLng(placeItem.lat(), placeItem.lng()),
-                id: placeItem.id(),
+                title: placeItem.name,
+                position: new google.maps.LatLng(placeItem.lat, placeItem.lng),
+                id: placeItem.id,
                 animation: google.maps.Animation.DROP
             });
 
             // ajax call to Forsquare API
-            var url = 'https://api.foursquare.com/v2/venues/'+placeItem.id()+'?client_id='+CLIENT_ID+'&client_secret='+CLIENT_SECRET+'&v=20180323'
+            var url = 'https://api.foursquare.com/v2/venues/'+placeItem.id+'?client_id='+CLIENT_ID+'&client_secret='+CLIENT_SECRET+'&v=20180323'
             $.ajax({
                 url: url,
                 dataType: "json",
@@ -91,30 +91,30 @@ var ViewModel = function() {
                     };
 
                     // Fill Place object with Forsquare data
-                    placeItem.address(address);
-                    placeItem.postalCode(postalCode);
-                    placeItem.image(prefix + "300x300" + suffix);
-                    placeItem.contact(contact);
-                    placeItem.url(url);
+                    placeItem.address = address;
+                    placeItem.postalCode = postalCode;
+                    placeItem.image = prefix + "300x300" + suffix;
+                    placeItem.contact = contact;
+                    placeItem.url = url;
                 
                     // Fill infowindows with data. Check if observables are not empty.
-                    var infoStr = '<h3>'+placeItem.name()+'</h3>';
-                    if (placeItem.address()) {
-                        infoStr +=  '<p>'+placeItem.address()+'</p>'
+                    var infoStr = '<h3>'+placeItem.name+'</h3>';
+                    if (placeItem.address) {
+                        infoStr +=  '<p>'+placeItem.address+'</p>'
                     }
-                    if (placeItem.postalCode()) {
-                        infoStr += '<p>'+placeItem.postalCode()+'</p>'
+                    if (placeItem.postalCode) {
+                        infoStr += '<p>'+placeItem.postalCode+'</p>'
                     }
-                    if (placeItem.contact()) {
-                        infoStr += '<p>'+placeItem.contact()+'</p>'
+                    if (placeItem.contact) {
+                        infoStr += '<p>'+placeItem.contact+'</p>'
                     }
-                    if (placeItem.image().indexOf("undef") > -1) {
+                    if (placeItem.image.indexOf("undef") > -1) {
                         infoStr += '<p>'+"There was no photo for this place in Forsquare database"+'</p>'
                     } else {
-                        infoStr += '<img src="'+placeItem.image()+'" alt="No image in forsquare database">'
+                        infoStr += '<img src="'+placeItem.image+'" alt="No image in forsquare database">'
                     }
-                    if (placeItem.url()) {
-                        infoStr += '<br><a href="'+placeItem.url()+'">Forsquare page</a>'
+                    if (placeItem.url) {
+                        infoStr += '<br><a href="'+placeItem.url+'">Forsquare page</a>'
                     }
                     
                     // Add an "click" eventlistener to markers.
@@ -160,7 +160,7 @@ var ViewModel = function() {
         });
         for (i = 0; i < self.placesList().length; i++) {
             var input = self.query().toLowerCase();
-            if (self.placesList()[i].name().toLowerCase().indexOf(input) !== -1) {
+            if (self.placesList()[i].name.toLowerCase().indexOf(input) !== -1) {
                 self.placesList()[i].visible(true);
                 self.placesList()[i].marker.setMap(map);
             }
