@@ -178,7 +178,7 @@ var ViewModel = function() {
     }
     // This is hamburger menu functionality. Toggle side panel visibility.
     self.toggleMenu = function() {
-        $('#side-panel').toggle();
+        $('.side-panel').toggle();
     }
       
 

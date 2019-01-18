@@ -10,14 +10,14 @@
         <div class="nav">
             <label data-bind="click: toggleMenu">&#9776;</label>
         </div>
-        <div id ="container">
-            <div id="side-panel">
+        <div class ="container">
+            <div class="side-panel">
                 <form>
                     <input id="input-field" type="text" data-bind="textInput: query, event: {keyup: filter}" placeholder="Search">
                 </form>
                 <ul id = "places-list" data-bind="foreach: placesList">
                     <li data-bind="if: visible">
-                    <div id="list-item" data-bind="text: name, click: $parent.listDetails" onmouseover="" style="cursor: pointer;"></dvi>
+                    <div class="list-item" data-bind="text: name, click: $parent.listDetails" onmouseover="" style="cursor: pointer;"></dvi>
                     </li>
                 </ul>
             </div>
